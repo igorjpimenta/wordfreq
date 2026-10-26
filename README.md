@@ -1,44 +1,94 @@
 # wordfreq
 
-Small CLI that counts word frequencies from stdin or file args.
+A small CLI that counts word frequencies, reading from stdin or file arguments.
+
+## Install
+
+Requires Python 3 (standard library only — no dependencies).
+
+```sh
+git clone https://github.com/igorjpimenta/wordfreq
+cd wordfreq
+chmod +x wordfreq
+```
 
 ## Usage
 
+Reads stdin when no files are given:
+
 ```sh
-echo 'Hello hello world!' | ./wordfreq --top 2
-./wordfreq --help
-./wordfreq file1.txt file2.txt --top 10
-python3 wordfreq --top 5 < input.txt
+echo 'the quick brown fox jumps over the lazy dog the fox' | ./wordfreq
 ```
 
-## Tokenization rule
+Output:
 
-Lowercase all text, then extract tokens matching `[a-z0-9]+`.
-All other characters (punctuation, whitespace, symbols) act as delimiters
-and are stripped. Sorting is deterministic: count descending, then word
-ascending. Output format is `<count> <word>` per line.
+```
+3 the
+2 fox
+1 brown
+1 dog
+1 jumps
+1 lazy
+1 over
+1 quick
+```
+
+Or pass one or more files (concatenated):
+
+```sh
+./wordfreq sample.txt
+./wordfreq file1.txt file2.txt
+```
 
 ## Options
 
-- `FILE ...` — input files, concatenated. Reads stdin when omitted.
-- `--top N` — limit output to top N words (default: 10, must be >= 1).
-- `--help` — print help and exit 0.
+| Option | Description |
+| --- | --- |
+| `FILE ...` | Input files, concatenated. Reads stdin when omitted. |
+| `--top N` | Limit output to the top N words. Defaults to 10; must be >= 1. |
 
-Missing/unreadable files exit nonzero with a `wordfreq: <path>: ...` message
-on stderr. No dependencies beyond Python 3 stdlib.
+Show help:
+
+```sh
+./wordfreq --help
+```
+
+## Tokenization
+
+The tool lowercases all text, then extracts tokens matching `[a-z0-9]+` —
+ASCII letters and digits only. Every other character (punctuation,
+whitespace, symbols) acts as a delimiter and is stripped. So
+`Hello, world!` yields the words `hello` and `world`.
+
+## Output
+
+One line per word in the format:
+
+```
+<count> <word>
+```
+
+Sorted deterministically: count descending, then word ascending.
+
+Missing files exit with a nonzero status and a `wordfreq: <path>: No such
+file or directory` message on stderr.
+
+## Examples
+
+```sh
+$ echo 'Hello, world! Hello again.' | ./wordfreq --top 2
+2 hello
+1 world
+```
+
+```sh
+$ ./wordfreq --top 2 sample.txt
+3 world
+2 hello
+```
 
 ## Tests
 
 ```sh
 python3 -m pytest test_wordfreq.py -v
-# or without pytest:
-python3 test_wordfreq.py
-```
-
-Example:
-
-```sh
-$ echo "Hello hello world!" | ./wordfreq --top 2
-2 hello
-1 world
 ```
