@@ -34,3 +34,11 @@ python3 -m pytest test_wordfreq.py -v
 # or without pytest:
 python3 test_wordfreq.py
 ```
+
+Example:
+
+```sh
+$ echo "Hello hello world!" | ./wordfreq --top 2
+2 hello
+1 world
+```
